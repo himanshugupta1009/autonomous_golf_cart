@@ -8,6 +8,7 @@ from gym.utils import seeding
 import numpy as np
 from PIL import Image as Image
 import matplotlib.pyplot as plt
+from experiments.human import Human
 
 # define colors
 # 0: black; 1 : gray; 2 : blue; 3 : green; 4 : red
@@ -47,6 +48,9 @@ class GridworldEnv(gym.Env):
         ''' set other parameters '''
         self.restart_once_done = False  # restart or not once done
         self.verbose = False  # to show the environment or not
+
+        ''' set humans '''
+        self.humans = self._initialize_humans()
 
         GridworldEnv.num_env += 1
         self.this_fig_num = GridworldEnv.num_env
@@ -270,6 +274,22 @@ class GridworldEnv(gym.Env):
     My Custom Function
     Dhanendra Soni
     """
+
+    def _initialize_humans(self):
+        humans = []
+        human_states = self.get_human_state()
+        human_goals = self.get_human_goal()
+        human_paths = [[3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 3, 3, 3, 2, 2, 2, 2, 3, 3, 3, 3, 3, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3],
+                       [4, 4, 4, 4, 4, 4, 2, 2, 2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4,
+                        4, 4, 4, 4, 4],
+                       [4, 4, 4, 1, 1, 1, 1, 1, 1, 4, 4, 1, 1, 4, 1, 4, 4, 1],
+                       [3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3]]
+
+        for i in range(4):
+            h = Human(human_states[i], human_goals[i], human_paths[i])
+            humans.append(h)
+        return humans
+
     def get_human_state(self):
         humans_x, humans_y = np.where(self.start_grid_map == 7)
         humans_pos = []
@@ -278,10 +298,10 @@ class GridworldEnv(gym.Env):
         return humans_pos
 
     def get_human_goal(self):
-        human_goals = [[1,1], [1,30], [14,1], [14,30]]
+        human_goals = [[14,1], [14,30], [1,30], [1,1]]
         return human_goals
 
-    def move_human(self, human_state, action):
+    def step_human(self, human_state, action):
         human_next_state = human_state
         # Actions:  0 stay, 1 up, 2 down, 3 left, 4 right
         # move up
@@ -306,40 +326,78 @@ class GridworldEnv(gym.Env):
             human_next_state[1] += 1
 
         self.observation = self._gridmap_to_observation(self.current_grid_map)
-        self._render()
+        # self._render()
         return human_next_state
 
+    def move_humans_one_time_step(self, itr):
+
+        temp_humans = []
+        for hum in self.humans:
+            next_state = hum.get_state()
+            path = hum.get_path_to_goal()
+
+            if next_state != hum.get_goal() and itr < len(path):
+                next_state = self.step_human(next_state, path[itr])
+                hum.current_state = next_state
+            temp_humans.append(hum)
+
+        self._render()
+        self.humans = temp_humans.copy()
+        return self.humans
+
     def move_humans_to_goals(self):
-        human_states = self.get_human_state()
-        human_goals = [[14, 1], [14, 30], [1, 30], [1, 1]]
-        human_paths = [[3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 3, 3, 3, 2, 2, 2, 2, 3, 3, 3, 3, 3, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3],
-                       [4, 4, 4, 4, 4, 4, 2, 2, 2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4,
-                        4, 4, 4, 4, 4],
-                       [4, 4, 4, 1, 1, 1, 1, 1, 1, 4, 4, 1, 1, 4, 1, 4, 4, 1],
-                       [3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3]]
-
-        next_state_1 = human_states[0]
-        path_1 = human_paths[0]
-        next_state_2 = human_states[1]
-        path_2 = human_paths[1]
-        next_state_3 = human_states[2]
-        path_3 = human_paths[2]
-        next_state_4 = human_states[3]
-        path_4 = human_paths[3]
-
         i = 0
-        while (True):
-            if next_state_1 != human_goals[0]:
-                next_state_1 = self.move_human(next_state_1, path_1[i])
-            if next_state_2 != human_goals[1]:
-                next_state_2 = self.move_human(next_state_2, path_2[i])
-            if next_state_3 != human_goals[2]:
-                next_state_3 = self.move_human(next_state_3, path_3[i])
-            if next_state_4 != human_goals[3]:
-                next_state_4 = self.move_human(next_state_4, path_4[i])
+        keep_while = True
+        while (keep_while):
+            humans = self.move_humans_one_time_step(i)
 
-            if next_state_1 == human_goals[0] and next_state_2 == human_goals[1] \
-                    and next_state_3 == human_goals[2] and next_state_4 == human_goals[3]:
+            for_break = True
+            for hum in humans:
+                for_break = for_break and hum.get_state() == hum.get_goal()
+
+            if for_break:
                 break
             time.sleep(0.1)
             i += 1
+
+    def temp_path_print(self):
+        robot_path = [[ 8, 30],
+                     [ 7, 30],
+                     [ 7, 29],
+                     [ 7, 28],
+                     [ 7, 27],
+                     [ 7, 26],
+                     [ 7, 25],
+                     [ 7, 24],
+                     [ 7, 23],
+                     [ 7, 22],
+                     [ 6, 22],
+                     [ 6, 21],
+                     [ 5, 21],
+                     [ 5, 20],
+                     [ 5, 19],
+                     [ 5, 18],
+                     [ 5, 17],
+                     [ 5, 16],
+                     [ 5, 15],
+                     [ 5, 14],
+                     [ 5, 13],
+                     [ 5, 12],
+                     [ 5, 11],
+                     [ 5, 10],
+                     [ 5,  9],
+                     [ 5,  8],
+                     [ 5,  7],
+                     [ 5,  6],
+                     [ 5,  5],
+                     [ 5,  4],
+                     [ 5,  3],
+                     [ 5 , 2],
+                     [ 5 , 1],
+                     [ 6,  1],
+                     [ 7,  1]]
+
+        for item in robot_path:
+            self.current_grid_map[item[0], item[1]] = 3
+        self.observation = self._gridmap_to_observation(self.current_grid_map)
+        self._render()
