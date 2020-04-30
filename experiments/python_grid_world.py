@@ -21,7 +21,7 @@ env.move_humans_to_goals()
 
 
 
-env.temp_path_print()
+# env.temp_path_print()
 
 
 

@@ -9,6 +9,7 @@ import numpy as np
 from PIL import Image as Image
 import matplotlib.pyplot as plt
 from experiments.human import Human
+import astar_experiments.pyastar as pyastar
 
 # define colors
 # 0: black; 1 : gray; 2 : blue; 3 : green; 4 : red
@@ -51,6 +52,9 @@ class GridworldEnv(gym.Env):
 
         ''' set humans '''
         self.humans = self._initialize_humans()
+
+        ''' Robot's current state'''
+        self.robot_state = self.agent_start_state
 
         GridworldEnv.num_env += 1
         self.this_fig_num = GridworldEnv.num_env
@@ -291,10 +295,11 @@ class GridworldEnv(gym.Env):
         return humans
 
     def get_human_state(self):
-        humans_x, humans_y = np.where(self.start_grid_map == 7)
+        humans_x, humans_y = np.where(self.current_grid_map == 7)
         humans_pos = []
         for i in range(len(humans_x)):
             humans_pos.append([humans_x[i], humans_y[i]])
+        print(humans_pos)
         return humans_pos
 
     def get_human_goal(self):
@@ -341,7 +346,7 @@ class GridworldEnv(gym.Env):
                 hum.current_state = next_state
             temp_humans.append(hum)
 
-        self._render()
+        # self._render()
         self.humans = temp_humans.copy()
         return self.humans
 
@@ -350,6 +355,13 @@ class GridworldEnv(gym.Env):
         keep_while = True
         while (keep_while):
             humans = self.move_humans_one_time_step(i)
+            next_pos = self.plan_astar_path_at_current_time()
+
+            self.robot_state = next_pos
+
+            self.current_grid_map[next_pos[0], next_pos[1]] = 3
+            self.observation = self._gridmap_to_observation(self.current_grid_map)
+            self._render()
 
             for_break = True
             for hum in humans:
@@ -357,47 +369,138 @@ class GridworldEnv(gym.Env):
 
             if for_break:
                 break
-            time.sleep(0.1)
+            time.sleep(1)
             i += 1
 
+    # tempeoraty function, just to print the path
     def temp_path_print(self):
-        robot_path = [[ 8, 30],
-                     [ 7, 30],
-                     [ 7, 29],
-                     [ 7, 28],
-                     [ 7, 27],
-                     [ 7, 26],
-                     [ 7, 25],
-                     [ 7, 24],
-                     [ 7, 23],
-                     [ 7, 22],
-                     [ 6, 22],
-                     [ 6, 21],
-                     [ 5, 21],
-                     [ 5, 20],
-                     [ 5, 19],
-                     [ 5, 18],
-                     [ 5, 17],
-                     [ 5, 16],
-                     [ 5, 15],
-                     [ 5, 14],
-                     [ 5, 13],
-                     [ 5, 12],
-                     [ 5, 11],
-                     [ 5, 10],
-                     [ 5,  9],
-                     [ 5,  8],
-                     [ 5,  7],
-                     [ 5,  6],
-                     [ 5,  5],
-                     [ 5,  4],
-                     [ 5,  3],
-                     [ 5 , 2],
-                     [ 5 , 1],
-                     [ 6,  1],
-                     [ 7,  1]]
+        # robot_path = [[ 8, 30],
+        #              [ 7, 30],
+        #              [ 7, 29],
+        #              [ 7, 28],
+        #              [ 7, 27],
+        #              [ 7, 26],
+        #              [ 7, 25],
+        #              [ 7, 24],
+        #              [ 7, 23],
+        #              [ 7, 22],
+        #              [ 6, 22],
+        #              [ 6, 21],
+        #              [ 5, 21],
+        #              [ 5, 20],
+        #              [ 5, 19],
+        #              [ 5, 18],
+        #              [ 5, 17],
+        #              [ 5, 16],
+        #              [ 5, 15],
+        #              [ 5, 14],
+        #              [ 5, 13],
+        #              [ 5, 12],
+        #              [ 5, 11],
+        #              [ 5, 10],
+        #              [ 5,  9],
+        #              [ 5,  8],
+        #              [ 5,  7],
+        #              [ 5,  6],
+        #              [ 5,  5],
+        #              [ 5,  4],
+        #              [ 5,  3],
+        #              [ 5 , 2],
+        #              [ 5 , 1],
+        #              [ 6,  1],
+        #              [ 7,  1]]
+
+        grid = copy.deepcopy(self.current_grid_map)
+
+        grid[grid == 1] = 99
+        grid[grid == 0] = 1
+        grid = np.asarray(grid, dtype=np.float32)
+
+        start = np.asarray([8, 30], dtype=np.int)
+        end = np.asarray([7, 1], dtype=np.int)
+
+        robot_path = pyastar.astar_path(grid, start, end, allow_diagonal=False)
 
         for item in robot_path:
             self.current_grid_map[item[0], item[1]] = 3
         self.observation = self._gridmap_to_observation(self.current_grid_map)
         self._render()
+
+
+    # A-star related functions
+
+    def plan_astar_path_at_current_time(self):
+        # get current grid world copy
+        grid = copy.deepcopy(self.current_grid_map)
+
+        # get human information and locations and update in the grid
+        # #### already updated in the step function
+        # transform grid word for astar using the cost terms
+
+        # update the neighbours of obstacle to partially blocked
+
+        grid = self.update_partial_blocking(grid)
+
+        grid[grid == 1] = 99
+        grid[grid == 7] = 99
+        grid[grid == 2] = 50
+        grid[grid == 9] = 50
+        grid[grid == 0] = 1
+
+        grid = np.asarray(grid, dtype=np.float32)
+
+        # get current start location
+
+        # get end goal which is fixed
+
+        # start = np.asarray([8, 30], dtype=np.int)
+        start = self.robot_state
+        end = np.asarray([7, 1], dtype=np.int)
+
+        robot_path = pyastar.astar_path(grid, start, end, allow_diagonal=False)
+
+        # return just the next step
+        return robot_path[1]
+
+
+    def update_partial_blocking(self, curr_grid):
+
+        humans_state = self.get_human_state()
+        # [3, 22]
+        # [4, 3]
+        # [11, 22]
+        # [12, 4]
+        for hum in humans_state:
+            x, y = hum[0], hum[1]
+            # left
+            if y - 1 > 0 and curr_grid[x][y - 1] == 0:
+                curr_grid[x][y - 1] = 9
+            # right
+            if y + 1 < len(curr_grid[0]) and curr_grid[x][y + 1] == 0:
+                curr_grid[x][y + 1] = 9
+            # up
+            if x - 1 > 0 and curr_grid[x - 1][y] == 0:
+                curr_grid[x - 1][y] = 9
+            # down
+            if x + 1 < len(curr_grid) and curr_grid[x + 1][y] == 0:
+                curr_grid[x + 1][y] = 9
+
+
+        for i in range(len(curr_grid)):
+            for j in range(len(curr_grid[0])):
+                if curr_grid[i][j] == 1:
+                    # left
+                    if j - 1 > 0 and curr_grid[i][j-1] == 0:
+                        curr_grid[i][j-1] = 9
+                    # right
+                    if j + 1 < len(curr_grid[0]) and curr_grid[i][j+1] == 0:
+                        curr_grid[i][j+1] = 9
+                    # up
+                    if i - 1 > 0 and curr_grid[i-1][j] == 0:
+                        curr_grid[i-1][j] = 9
+                    # down
+                    if i + 1 < len(curr_grid) and curr_grid[i+1][j] == 0:
+                        curr_grid[i+1][j] = 9
+        return curr_grid
+
+
