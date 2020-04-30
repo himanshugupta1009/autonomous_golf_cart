@@ -8,8 +8,8 @@ from gym.utils import seeding
 import numpy as np
 from PIL import Image as Image
 import matplotlib.pyplot as plt
-from experiments.human import Human
-import astar_experiments.pyastar as pyastar
+from gridworld_environment.human import Human
+import hybrid_astar.pyastar as pyastar
 
 # define colors
 # 0: black; 1 : gray; 2 : blue; 3 : green; 4 : red
@@ -36,7 +36,7 @@ class GridworldEnv(gym.Env):
 
         ''' initialize system state '''
         this_file_path = os.path.dirname(os.path.realpath(__file__))
-        self.grid_map_path = os.path.join(this_file_path, 'plan5.txt')
+        self.grid_map_path = os.path.join(this_file_path, 'environment.txt')
         self.start_grid_map = self._read_grid_map(self.grid_map_path)  # initial grid map
         self.current_grid_map = copy.deepcopy(self.start_grid_map)  # current grid map
         self.observation = self._gridmap_to_observation(self.start_grid_map)
@@ -276,7 +276,6 @@ class GridworldEnv(gym.Env):
 
     """
     My Custom Function
-    Dhanendra Soni
     """
 
     def _initialize_humans(self):
@@ -372,63 +371,26 @@ class GridworldEnv(gym.Env):
             time.sleep(1)
             i += 1
 
-    # tempeoraty function, just to print the path
-    def temp_path_print(self):
-        # robot_path = [[ 8, 30],
-        #              [ 7, 30],
-        #              [ 7, 29],
-        #              [ 7, 28],
-        #              [ 7, 27],
-        #              [ 7, 26],
-        #              [ 7, 25],
-        #              [ 7, 24],
-        #              [ 7, 23],
-        #              [ 7, 22],
-        #              [ 6, 22],
-        #              [ 6, 21],
-        #              [ 5, 21],
-        #              [ 5, 20],
-        #              [ 5, 19],
-        #              [ 5, 18],
-        #              [ 5, 17],
-        #              [ 5, 16],
-        #              [ 5, 15],
-        #              [ 5, 14],
-        #              [ 5, 13],
-        #              [ 5, 12],
-        #              [ 5, 11],
-        #              [ 5, 10],
-        #              [ 5,  9],
-        #              [ 5,  8],
-        #              [ 5,  7],
-        #              [ 5,  6],
-        #              [ 5,  5],
-        #              [ 5,  4],
-        #              [ 5,  3],
-        #              [ 5 , 2],
-        #              [ 5 , 1],
-        #              [ 6,  1],
-        #              [ 7,  1]]
-
-        grid = copy.deepcopy(self.current_grid_map)
-
-        grid[grid == 1] = 99
-        grid[grid == 0] = 1
-        grid = np.asarray(grid, dtype=np.float32)
-
-        start = np.asarray([8, 30], dtype=np.int)
-        end = np.asarray([7, 1], dtype=np.int)
-
-        robot_path = pyastar.astar_path(grid, start, end, allow_diagonal=False)
-
-        for item in robot_path:
-            self.current_grid_map[item[0], item[1]] = 3
-        self.observation = self._gridmap_to_observation(self.current_grid_map)
-        self._render()
+    # # tempeoraty function, just to print the path
+    # def temp_path_print(self):
+    #     grid = copy.deepcopy(self.current_grid_map)
+    #
+    #     grid[grid == 1] = 99
+    #     grid[grid == 0] = 1
+    #     grid = np.asarray(grid, dtype=np.float32)
+    #
+    #     start = np.asarray([8, 30], dtype=np.int)
+    #     end = np.asarray([7, 1], dtype=np.int)
+    #
+    #     robot_path = pyastar.astar_path(grid, start, end, allow_diagonal=False)
+    #
+    #     for item in robot_path:
+    #         self.current_grid_map[item[0], item[1]] = 3
+    #     self.observation = self._gridmap_to_observation(self.current_grid_map)
+    #     self._render()
 
 
     # A-star related functions
-
     def plan_astar_path_at_current_time(self):
         # get current grid world copy
         grid = copy.deepcopy(self.current_grid_map)

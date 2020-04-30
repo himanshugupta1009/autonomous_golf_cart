@@ -6,7 +6,6 @@ def calc_distance(human, human_goals):
     return distances
 
 
-
 def belief_updator(human_goals, human_curr_poses, old_belief):
     new_belief = []
     for i, human in enumerate(human_curr_poses):
@@ -21,8 +20,6 @@ def belief_updator(human_goals, human_curr_poses, old_belief):
         new_belief.append(temp_array)
 
     return new_belief
-
-
 
 
 human_goals = [[1,1], [1,30], [14,30], [14,1]]

@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-import astar_experiments.pyastar as pyastar
+import hybrid_astar.pyastar as pyastar
 from time import time
 import sys
 import os
@@ -25,7 +25,7 @@ def _read_grid_map(grid_map_path):
 
 def convert_grid_for_astar():
     this_file_path = os.path.dirname(os.path.realpath(__file__))
-    grid_map_path = os.path.join(this_file_path, 'grid_world.txt')
+    grid_map_path = os.path.join(this_file_path, 'environment.txt')
     start_grid_map = _read_grid_map(grid_map_path)
 
     ## convert 0's to inf
@@ -53,8 +53,6 @@ def main():
     # end_i, = np.where(grid[:, -1] == 1)
     # end = np.array([end_i[0], grid.shape[0] - 1])
 
-
-
     t0 = time()
     # set allow_diagonal=True to enable 8-connectivity
     path = pyastar.astar_path(grid, start, end, allow_diagonal=False)
@@ -68,8 +66,6 @@ def main():
     #     cv2.imwrite(OUTP_FPATH, maze)
     # else:
     #     print('no path found')
-
-
 
     print(path)
     print('done')

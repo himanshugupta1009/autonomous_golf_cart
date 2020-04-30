@@ -1,6 +1,6 @@
 import gym
 import gym_gridworlds
-from experiments.gw_env import GridworldEnv
+from gridworld_environment.gw_env import GridworldEnv
 import time
 
 env = GridworldEnv()
@@ -16,10 +16,7 @@ env._render()
 
 env.move_humans_to_goals()
 
-
 # env.step(2)
-
-
 
 # env.temp_path_print()
 
