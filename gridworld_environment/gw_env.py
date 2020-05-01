@@ -278,13 +278,17 @@ class GridworldEnv(gym.Env):
     My Custom Function
     """
 
+    def _get_robot_state(self):
+        return self.robot_state
+
     def _initialize_humans(self):
         humans = []
         human_states = self.get_human_state()
         human_goals = self.get_human_goal()
-        human_paths = [[3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 3, 3, 3, 2, 2, 2, 2, 3, 3, 3, 3, 3, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3],
+        human_paths = [
                        [4, 4, 4, 4, 4, 4, 2, 2, 2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4,
                         4, 4, 4, 4, 4],
+                        [3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 3, 3, 3, 2, 2, 2, 2, 3, 3, 3, 3, 3, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3],
                        [4, 4, 4, 1, 1, 1, 1, 1, 1, 4, 4, 1, 1, 4, 1, 4, 4, 1],
                        [3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3]]
 
@@ -298,11 +302,12 @@ class GridworldEnv(gym.Env):
         humans_pos = []
         for i in range(len(humans_x)):
             humans_pos.append([humans_x[i], humans_y[i]])
-        print(humans_pos)
+        # print(humans_pos)
+        humans_pos = [[4, 3], [3, 22], [11, 22], [12, 4]] # for check
         return humans_pos
 
     def get_human_goal(self):
-        human_goals = [[14,1], [14,30], [1,30], [1,1]]
+        human_goals = [[14,30], [14,1], [1,30], [1,1]]
         return human_goals
 
     def step_human(self, human_state, action):
@@ -349,27 +354,27 @@ class GridworldEnv(gym.Env):
         self.humans = temp_humans.copy()
         return self.humans
 
-    def move_humans_to_goals(self):
-        i = 0
-        keep_while = True
-        while (keep_while):
-            humans = self.move_humans_one_time_step(i)
-            next_pos = self.plan_astar_path_at_current_time()
-
-            self.robot_state = next_pos
-
-            self.current_grid_map[next_pos[0], next_pos[1]] = 3
-            self.observation = self._gridmap_to_observation(self.current_grid_map)
-            self._render()
-
-            for_break = True
-            for hum in humans:
-                for_break = for_break and hum.get_state() == hum.get_goal()
-
-            if for_break:
-                break
-            time.sleep(1)
-            i += 1
+    # def move_humans_to_goals(self):
+    #     i = 0
+    #     keep_while = True
+    #     while (keep_while):
+    #         humans = self.move_humans_one_time_step(i)
+    #         next_pos = self.plan_astar_path_at_current_time()
+    #
+    #         self.robot_state = next_pos
+    #
+    #         self.current_grid_map[next_pos[0], next_pos[1]] = 3
+    #         self.observation = self._gridmap_to_observation(self.current_grid_map)
+    #         self._render()
+    #
+    #         for_break = True
+    #         for hum in humans:
+    #             for_break = for_break and hum.get_state() == hum.get_goal()
+    #
+    #         if for_break:
+    #             break
+    #         time.sleep(1)
+    #         i += 1
 
     # # tempeoraty function, just to print the path
     # def temp_path_print(self):
@@ -422,7 +427,7 @@ class GridworldEnv(gym.Env):
         robot_path = pyastar.astar_path(grid, start, end, allow_diagonal=False)
 
         # return just the next step
-        return robot_path[1]
+        return robot_path
 
 
     def update_partial_blocking(self, curr_grid):
