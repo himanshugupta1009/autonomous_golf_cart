@@ -1,12 +1,15 @@
 from gridworld_environment.gw_env import GridworldEnv
 from utils.belief_updator import belief_update, goal_update_based_on_new_belief, flatten_2d_list
 from pomdp_python_integration.command_line_hack import update_file_with_new_data, run_julia_and_get_output_from_command_line
+from pomdp_python_integration.reward_functions import get_total_reward
 import pdb
 
 env = GridworldEnv()
 
 actual_path = []
 curr_idx_in_path = 0
+
+total_reward = 0
 
 h_time_step = 0
 
@@ -39,6 +42,7 @@ new_human_goal_pair_list = goal_update_based_on_new_belief(new_belief, human_cur
 robot_curr_state = env._get_robot_state()
 goal_state = [7,1]
 print(robot_curr_state)
+robot_prev_state = robot_curr_state
 
 curr_vel = initial_vel
 
@@ -79,6 +83,7 @@ while robot_curr_state != goal_state:
     # update  velocity based on action
     curr_vel = curr_vel + int(result_action)
 
+    robot_prev_state = robot_curr_state
     # update global path
     if len(astar_path) > curr_vel:
         actual_path.append(astar_path[0 : curr_vel])
@@ -107,15 +112,18 @@ while robot_curr_state != goal_state:
     # print(new_human_goal_pair_list)
     print('got belief update')
 
-
-    print(type(goal_state))
-    print(type(robot_curr_state))
-    print(robot_curr_state)
+    # print(type(goal_state))
+    # print(type(robot_curr_state))
+    # print(robot_curr_state)
     robot_curr_state = list(robot_curr_state)
+
+    # robot_pose, pedestrian_poses, coll_threshold, robot_prev_pose, robot_goal, robot_speed
+    total_reward += get_total_reward(robot_curr_state, human_curr_poses, 2, robot_prev_state, goal_state, curr_vel)
     print('\n #################### \n')
 
 
 print(actual_path)
+print(total_reward)
 
 
 
