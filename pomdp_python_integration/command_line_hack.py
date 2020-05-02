@@ -3,6 +3,8 @@ import subprocess
 
 # returns the action need to be taken
 def run_julia_and_get_output_from_command_line():
+
+    action = 0
     process = subprocess.Popen(['julia', 'speed_planner_updated.jl'],
                          stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE)
@@ -11,8 +13,16 @@ def run_julia_and_get_output_from_command_line():
     output = output.decode('utf-8')
     error = error.decode('utf-8')
 
+    error_array = error.split()
+    if len(error_array) > 0:
+        print('Julia ERROR')
     output_array = output.split()
-    return output_array[-1]
+
+    if len(output_array) > 0:
+        action = output_array[-1]
+
+
+    return action
 
 # run_julia_and_get_output_from_command_line()
 
@@ -24,10 +34,10 @@ def update_file_with_new_data(cart_state_data, pedestrians_list_data, belief_dat
     lines = fi.readlines()
     fi.close()
 
-    lines[426] = cart_state_data+'\n'
-    lines[430] = pedestrians_list_data+'\n'
-    lines[434] = belief_data+'\n'
-    lines[436] = astar_path_data+'\n'
+    lines[429] = cart_state_data+'\n'
+    lines[433] = pedestrians_list_data+'\n'
+    lines[437] = belief_data+'\n'
+    lines[439] = astar_path_data+'\n'
 
     fo = open('speed_planner_updated.jl','w')
 

@@ -2,7 +2,7 @@
 
 def collision_reward(robot_pose, pedestrian_poses, coll_threshold):
     coll_r = 0
-    COLL_REWARD = -10
+    COLL_REWARD = -100
     for ped_pose in pedestrian_poses:
         man_dist = abs(robot_pose[0] - ped_pose[0]) + abs(robot_pose[1] - ped_pose[1])
         if man_dist < coll_threshold:

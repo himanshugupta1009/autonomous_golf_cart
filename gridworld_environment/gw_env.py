@@ -285,12 +285,30 @@ class GridworldEnv(gym.Env):
         humans = []
         human_states = self.get_human_state()
         human_goals = self.get_human_goal()
+
+        # 0 stay, 1 up, 2 down, 3 left, 4 right
+
+        # # Human Trajectory 1
+        # human_paths = [
+        #                 [4, 4, 4, 4, 4, 2, 2, 2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 2, 2, 4, 4, 4, 4, 4, 2, 4, 4, 4, 2, 4, 4, 4, 4, 4],
+        #                 [3, 3, 3, 3, 3, 2, 2, 2, 2, 3, 3, 2, 2, 2, 2, 3, 3, 3, 2, 3, 3, 3, 2, 3, 3, 3, 2, 3, 3, 3, 3, 3],
+        #                 [4, 4, 4, 1, 1, 1, 1, 1, 4, 4, 1, 1, 1, 4, 4, 1, 1, 4],
+        #                 [3, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1]]
+
+        # # Human Trajectory 2
+        # human_paths = [
+        #                 [2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 2, 3],
+        #                 [4, 4, 2, 2, 2, 4, 2, 2, 2, 2, 4, 4, 2, 2, 4, 2, 4, 4, 4, 2],
+        #                 [3, 3, 3, 3, 3, 1, 1, 1, 3, 1, 1, 3, 3, 3, 1, 1, 3, 3, 1, 3, 3, 3, 3, 3, 1, 3, 3, 3, 1, 3, 3],
+        #                 [4, 4, 4, 4, 1, 4, 4, 4, 4, 4, 1, 1, 1, 4, 1, 4, 4, 4, 1, 1, 1, 4, 4, 4, 1, 1, 4, 4, 4, 4, 4, 1, 4, 4, 4, 4, 4]]
+
+        # Human Trajectory 3
         human_paths = [
-                       [4, 4, 4, 4, 4, 4, 2, 2, 2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4,
-                        4, 4, 4, 4, 4],
-                        [3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 3, 3, 3, 2, 2, 2, 2, 3, 3, 3, 3, 3, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3],
-                       [4, 4, 4, 1, 1, 1, 1, 1, 1, 4, 4, 1, 1, 4, 1, 4, 4, 1],
-                       [3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3]]
+            [4,4,4,4,4,4,4,4,4,4,4,4,4,4,2,2,2,2,2,2,2,2,3,3,3,2,3,3,3,2,3,3,3,3,3,3,3,3,3,3],
+            [2,2,2,4,4,2,4,4,4,2,2,2,2,4,4,2,2,2,4],
+            [2,4,4,1,1,4,1,1,1,1,1,1,4,4,4,4,1,4,1,1],
+            [4,4,4,4,1,1,1,1,1,1,1,3,3,3,3,3,3,1,1,3,1,1]]
+
 
         for i in range(4):
             h = Human(human_states[i], human_goals[i], human_paths[i])
@@ -354,16 +372,17 @@ class GridworldEnv(gym.Env):
         self.humans = temp_humans.copy()
         return self.humans
 
-    def move_humans_to_goals(self):
+    def move_humans_to_goals(self, cart_poses):
         i = 0
         keep_while = True
 
-        cart_poses = [[8,30],[7,28],[7,24],[5,22],[4,20],[4,16],[4,12],[4,7],[6,4],[7,1]]
+        # cart_poses = [[8,30],[7,28],[7,24],[5,21],[4,16],[4,11],[3,7],[6,4],[7,1]]
 
         while (keep_while):
             humans = self.move_humans_one_time_step(i)
             # next_pos = self.plan_astar_path_at_current_time()
             next_pos = cart_poses[i]
+            # next_pos = [8,30]
 
             self.robot_state = next_pos
 
@@ -380,16 +399,16 @@ class GridworldEnv(gym.Env):
             time.sleep(1)
             i += 1
 
-    # # tempeoraty function, just to print the path
-    # def temp_path_print(self):
-    #     grid = copy.deepcopy(self.current_grid_map)
-    #
-    #     grid[grid == 1] = 99
-    #     grid[grid == 0] = 1
-    #     grid = np.asarray(grid, dtype=np.float32)
-    #
-    #     start = np.asarray([8, 30], dtype=np.int)
-    #     end = np.asarray([7, 1], dtype=np.int)
+    # tempeoraty function, just to print the path
+    def temp_path_print(self):
+        grid = copy.deepcopy(self.current_grid_map)
+
+        grid[grid == 1] = 99
+        grid[grid == 0] = 1
+        grid = np.asarray(grid, dtype=np.float32)
+
+        start = np.asarray([8, 30], dtype=np.int)
+        end = np.asarray([7, 1], dtype=np.int)
     #
     #     # robot_path = pyastar.astar_path(grid, start, end, allow_diagonal=False)
     #     robot_path = [[ 8, 30],
@@ -421,21 +440,55 @@ class GridworldEnv(gym.Env):
     #    [6, 2],
     #    [7, 2],
     #    [7, 1]]
-    #
-    #     for item in robot_path:
-    #         self.current_grid_map[item[0], item[1]] = 3
-    #     self.current_grid_map[8, 30] = 4
-    #     self.current_grid_map[7, 28] = 4
-    #     self.current_grid_map[7, 24] = 4
-    #     self.current_grid_map[5, 22] = 4
-    #     self.current_grid_map[4, 20] = 4
-    #     self.current_grid_map[4, 16] = 4
-    #     self.current_grid_map[4, 12] = 4
-    #     self.current_grid_map[4, 7] = 4
-    #     self.current_grid_map[6, 4] = 4
-    #     self.current_grid_map[7, 1] = 4
-    #     self.observation = self._gridmap_to_observation(self.current_grid_map)
-    #     self._render()
+
+        robot_path = [[ 8, 30],
+           [ 8, 29],
+           [ 7, 29],[ 7, 28],
+           [ 7, 27],
+           [ 7, 26],
+           [ 7, 25],[ 7, 24],
+           [ 6, 24],
+           [ 6, 23],
+           [ 6, 22],
+           [ 5, 22],[ 5, 21],
+           [ 4, 21],
+           [ 4, 20],
+           [ 4, 19],
+           [ 4, 18],
+           [ 4, 17],[ 4, 16],
+           [ 4, 15],
+           [ 4, 14],
+           [ 4, 13],
+           [ 4, 12],[ 4, 11],
+           [ 4, 10],
+           [ 3, 10],
+           [ 3,  9],
+           [ 3,  8],[3, 7],
+           [3, 6],
+           [3, 5],
+           [4, 5],
+           [5, 5],
+           [5, 4],[6, 4],
+           [6, 3],
+           [6, 2],
+           [7, 2],
+           [7, 1]]
+
+        for item in robot_path:
+            self.current_grid_map[item[0], item[1]] = 3
+
+        self.current_grid_map[8, 30] = 4
+        self.current_grid_map[7, 28] = 4
+        self.current_grid_map[7, 24] = 4
+        self.current_grid_map[5, 22] = 4
+        self.current_grid_map[4, 20] = 4
+        self.current_grid_map[4, 16] = 4
+        self.current_grid_map[4, 12] = 4
+        self.current_grid_map[4, 7] = 4
+        self.current_grid_map[6, 4] = 4
+        self.current_grid_map[7, 1] = 4
+        self.observation = self._gridmap_to_observation(self.current_grid_map)
+        self._render()
 
 
     # A-star related functions
@@ -513,4 +566,36 @@ class GridworldEnv(gym.Env):
                         curr_grid[i+1][j] = 9
         return curr_grid
 
+
+    # function to move humans and cart in the environment for the given cart path
+    def move_cart_to_goal(self, cart_poses):
+        i = 0
+        keep_while = True
+
+        while (keep_while):
+            humans = self.move_humans_one_time_step(i)
+            if i < len(cart_poses):
+                next_pos = cart_poses[i]
+
+            self.robot_state = next_pos
+
+            if i > 0:
+                prev_pose = cart_poses[i-1]
+                self.current_grid_map[prev_pose[0], prev_pose[1]] = 0
+
+            if i  == len(cart_poses):
+                self.current_grid_map[cart_poses[-1][0], cart_poses[-1][1]] = 4
+
+            self.current_grid_map[next_pos[0], next_pos[1]] = 4
+            self.observation = self._gridmap_to_observation(self.current_grid_map)
+            self._render()
+
+            for_break = True
+            for hum in humans:
+                for_break = for_break and hum.get_state() == hum.get_goal()
+
+            if for_break or i == len(cart_poses):
+                break
+            time.sleep(1)
+            i += 1
 

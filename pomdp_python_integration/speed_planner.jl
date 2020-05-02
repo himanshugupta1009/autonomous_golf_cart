@@ -137,7 +137,7 @@ function POMDPs.gen(m::Speed_Planner_POMDP, s, a, rng)
         # y = new state in path's Y
         # theta = new states - one previous state {if change in x or change in y}
         # v = v
-        new_v = s.cart.v + a
+        new_v = s.cart.v
         new_position = m.astar_path[clamp(s.path_covered_index + new_v,1,length(m.astar_path))]
         new_theta = calculate_theta(new_position, m.astar_path[clamp(s.path_covered_index + new_v - 1,1,length(m.astar_path))])
         cart_new_state = cart_state(new_position[1], new_position[2], new_theta, new_v)
@@ -160,7 +160,10 @@ function POMDPs.gen(m::Speed_Planner_POMDP, s, a, rng)
         # y = new state in path's Y
         # theta = new states - one previous state {if change in x or change in y}
         # v = v +1
-        new_v = s.cart.v + a % 5
+        new_v = s.cart.v + a
+        if(new_v>m.max_cart_speed)
+            new_v = m.max_cart_speed
+        end
         new_position = m.astar_path[clamp(s.path_covered_index + new_v,1,length(m.astar_path))]
         new_theta = calculate_theta(new_position, m.astar_path[clamp(s.path_covered_index + new_v - 1,1,length(m.astar_path))])
         cart_new_state = cart_state(new_position[1], new_position[2], new_theta, new_v)
@@ -409,13 +412,13 @@ function get_best_possible_action(cart_start_state_list, cart_goal_position, ped
         push!(robot_path,(position[1],position[2]))
     end
             
-    golfcart_pomdp() = Speed_Planner_POMDP(0.9,1,2,-1000,100,5,cart_goal,cart_start_state,
+    golfcart_pomdp() = Speed_Planner_POMDP(0.9,1,3,-100,100,5,cart_goal,cart_start_state,
         human_state_start_list,all_goals_list,human_dis_list,robot_path,1)    
     
     m = golfcart_pomdp()
     #solver = DESPOTSolver(bounds=(-20.0, 1000.0))
     #solver = DESPOTSolver(bounds=(DefaultPolicyLB(RandomSolver()), golf_cart_upper_bound))
-    solver = DESPOTSolver(bounds=IndependentBounds(0.0,golf_cart_upper_bound, check_terminal=true))
+    solver = DESPOTSolver(bounds=IndependentBounds(DefaultPolicyLB(FunctionPolicy(b->1)),golf_cart_upper_bound, check_terminal=true))
     planner = solve(solver, m)
     b = initialstate_distribution(m);
     #@show("check works till here")

@@ -86,7 +86,7 @@ while robot_curr_state != goal_state:
     robot_prev_state = robot_curr_state
     # update global path
     if len(astar_path) > curr_vel:
-        actual_path.append(astar_path[0 : curr_vel])
+        actual_path.append(astar_path[1 : curr_vel+1])
         # curr_idx_in_path = curr_idx_in_path + curr_vel
         env.robot_state = astar_path[curr_vel]
         robot_curr_state = astar_path[curr_vel]
@@ -118,7 +118,7 @@ while robot_curr_state != goal_state:
     robot_curr_state = list(robot_curr_state)
 
     # robot_pose, pedestrian_poses, coll_threshold, robot_prev_pose, robot_goal, robot_speed
-    total_reward += get_total_reward(robot_curr_state, human_curr_poses, 2, robot_prev_state, goal_state, curr_vel)
+    total_reward += get_total_reward(robot_curr_state, human_curr_poses, 3, robot_prev_state, goal_state, curr_vel)
     print('\n #################### \n')
 
 
@@ -128,33 +128,103 @@ print(total_reward)
 
 
 
-# [array([[ 8, 30],
-#        [ 8, 29],
-#        [ 7, 29]]), array([[ 7, 28],
-#        [ 7, 27],
+# #Traj-1
+# [[ 8, 29]]), array([[ 7, 29]]), array([[ 7, 28],
+#        [ 7, 27]]), array([[ 7, 26],
+#        [ 7, 25],
+#        [ 7, 24]]), array([[ 6, 24],
+#        [ 6, 23],
+#        [ 6, 22],
+#        [ 5, 22]]), array([[ 5, 21],
+#        [ 4, 21],
+#        [ 4, 20],
+#        [ 4, 19]]), array([[ 4, 18],
+#        [ 4, 17],
+#        [ 4, 16],
+#        [ 4, 15],
+#        [ 4, 14]]), array([[ 4, 13],
+#        [ 4, 12],
+#        [ 4, 11],
+#        [ 4, 10]]), array([[4, 9],
+#        [4, 8],
+#        [5, 8],
+#        [5, 7],
+#        [5, 6]]), array([[5, 5],
+#        [5, 4],
+#        [6, 4],
+#        [6, 3],
+#        [6, 2]]), array([[6, 2],
+#        [7, 2],
+#        [7, 1]])]
+
+# [array([[ 8, 29]]), array([], shape=(0, 2), dtype=int64), array([[ 7, 29]]), array([], shape=(0, 2), dtype=int64), array([], shape=(0, 2), dtype=int64), array([], shape=(0, 2), dtype=int64), array([], shape=(0, 2), dtype=int64), array([], shape=(0, 2), dtype=int64), array([[ 7, 28]]), array([[ 7, 27],
+#        [ 7, 26]]), array([[ 7, 25],
+#        [ 7, 24]]), array([[ 6, 24],
+#        [ 6, 23],
+#        [ 6, 22]]), array([[ 5, 22],
+#        [ 5, 21],
+#        [ 4, 21],
+#        [ 4, 20]]), array([[ 4, 19],
+#        [ 4, 18],
+#        [ 4, 17],
+#        [ 4, 16]]), array([[ 4, 15],
+#        [ 4, 14],
+#        [ 4, 13]]), array([[ 4, 12],
+#        [ 4, 11]]), array([[ 4, 10]]), array([[4, 9]]), array([[4, 8]]), array([], shape=(0, 2), dtype=int64), array([], shape=(0, 2), dtype=int64)]
+
+
+
+
+#
+# # Traj-2
+# [array([[ 8, 29]]), array([[ 7, 29],
+#        [ 7, 28]]), array([[ 7, 27],
 #        [ 7, 26],
 #        [ 7, 25]]), array([[ 7, 24],
 #        [ 6, 24],
 #        [ 6, 23],
 #        [ 6, 22]]), array([[ 5, 22],
 #        [ 5, 21],
-#        [ 4, 21]]), array([[ 4, 20],
-#        [ 4, 19],
+#        [ 4, 21],
+#        [ 4, 20]]), array([[ 4, 19],
 #        [ 4, 18],
-#        [ 4, 17]]), array([[ 4, 16],
-#        [ 4, 15],
+#        [ 4, 17],
+#        [ 4, 16]]), array([[ 4, 15],
 #        [ 4, 14],
-#        [ 4, 13]]), array([[ 4, 12],
-#        [ 4, 11],
+#        [ 4, 13],
+#        [ 4, 12]]), array([[ 4, 11],
 #        [ 4, 10],
 #        [ 4,  9],
 #        [ 4,  8]]), array([[4, 7],
 #        [4, 6],
 #        [4, 5],
-#        [5, 5],
-#        [5, 4]]), array([[6, 4],
+#        [5, 5]]), array([[5, 4],
+#        [6, 4],
 #        [6, 3],
-#        [6, 2],
+#        [6, 2]]), array([[6, 2],
 #        [7, 2],
 #        [7, 1]])]
-#
+
+
+
+#Traj-3
+# [array([[ 8, 29],
+#        [ 7, 29]]), array([[ 7, 28],
+#        [ 7, 27],
+#        [ 7, 26]]), array([[ 7, 25],
+#        [ 7, 24],
+#        [ 6, 24]]), array([[ 5, 24],
+#        [ 5, 23],
+#        [ 5, 22],
+#        [ 5, 21]]), array([[ 4, 21],
+#        [ 4, 20],
+#        [ 4, 19]]), array([[ 4, 18],
+#        [ 4, 17],
+#        [ 4, 16]]), array([[ 4, 15],
+#        [ 4, 14]]), array([[ 4, 13]]), array([[ 5, 13],
+#        [ 5, 12]]), array([[ 5, 11],
+#        [ 4, 11]]), array([[ 4, 10]]), array([[4, 9]]), array([[4, 8]]), array([[4, 7]]), array([[4, 6]]), array([[4, 5],
+#        [5, 5]]), array([[5, 4],
+#        [6, 4]]), array([[6, 3],
+#        [6, 2]]), array([[7, 2],
+#        [7, 1]])]

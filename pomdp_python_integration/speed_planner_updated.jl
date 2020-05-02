@@ -137,7 +137,7 @@ function POMDPs.gen(m::Speed_Planner_POMDP, s, a, rng)
         # y = new state in path's Y
         # theta = new states - one previous state {if change in x or change in y}
         # v = v
-        new_v = s.cart.v + a
+        new_v = s.cart.v
         new_position = m.astar_path[clamp(s.path_covered_index + new_v,1,length(m.astar_path))]
         new_theta = calculate_theta(new_position, m.astar_path[clamp(s.path_covered_index + new_v - 1,1,length(m.astar_path))])
         cart_new_state = cart_state(new_position[1], new_position[2], new_theta, new_v)
@@ -160,7 +160,10 @@ function POMDPs.gen(m::Speed_Planner_POMDP, s, a, rng)
         # y = new state in path's Y
         # theta = new states - one previous state {if change in x or change in y}
         # v = v +1
-        new_v = s.cart.v + a % 5
+        new_v = s.cart.v + a
+        if(new_v>m.max_cart_speed)
+            new_v = m.max_cart_speed
+        end
         new_position = m.astar_path[clamp(s.path_covered_index + new_v,1,length(m.astar_path))]
         new_theta = calculate_theta(new_position, m.astar_path[clamp(s.path_covered_index + new_v - 1,1,length(m.astar_path))])
         cart_new_state = cart_state(new_position[1], new_position[2], new_theta, new_v)
@@ -409,13 +412,13 @@ function get_best_possible_action(cart_start_state_list, cart_goal_position, ped
         push!(robot_path,(position[1],position[2]))
     end
 
-    golfcart_pomdp() = Speed_Planner_POMDP(0.9,1,2,-1000,100,5,cart_goal,cart_start_state,
+    golfcart_pomdp() = Speed_Planner_POMDP(0.9,1,3,-100,100,5,cart_goal,cart_start_state,
         human_state_start_list,all_goals_list,human_dis_list,robot_path,1)
 
     m = golfcart_pomdp()
     #solver = DESPOTSolver(bounds=(-20.0, 1000.0))
     #solver = DESPOTSolver(bounds=(DefaultPolicyLB(RandomSolver()), golf_cart_upper_bound))
-    solver = DESPOTSolver(bounds=IndependentBounds(0.0,golf_cart_upper_bound, check_terminal=true))
+    solver = DESPOTSolver(bounds=IndependentBounds(DefaultPolicyLB(FunctionPolicy(b->1)),golf_cart_upper_bound, check_terminal=true, consistency_fix_thresh=10.0),D=100)
     planner = solve(solver, m)
     b = initialstate_distribution(m);
     #@show("check works till here")
@@ -424,17 +427,17 @@ function get_best_possible_action(cart_start_state_list, cart_goal_position, ped
 end
 
 
-cart_start_state_list = [6, 4, 0, 5]
+cart_start_state_list = [6, 2, 0, 2]
 
 cart_goal_position = [7,1]
 
-pedestrians_list = [7, 9, 1, 1, 7, 17, 1, 30, 5, 25, 1, 30, 4, 3, 1, 1]
+pedestrians_list = [9, 17, 14, 30, 14, 30, 1, 30, 2, 30, 1, 30, 3, 2, 1, 1]
 
 possible_goal_positions = [1,1,1,30,14,30,14,1]
 
-initial_human_goal_distribution_list = [0.35083492459608967, 0.16063627698471555, 0.1584910634938675, 0.33003773492532734, 0.23098525996074556, 0.27567587519020825, 0.267329844477873, 0.22600902037117318, 0.12326873984224641, 0.4684053871615102, 0.2913136783670879, 0.1170121946291554, 0.6205392770573788, 0.08235932349421629, 0.0777076340484697, 0.2193937653999352]
+initial_human_goal_distribution_list = [0.2210735669168094, 0.25907997536166755, 0.28392977784176104, 0.23591667987976203, 0.22023846872452524, 0.5384067715949707, 0.0, 0.24135475968050413, 0.02997610427531354, 0.869823699824053, 0.07248530831867109, 0.027714887581962454, 0.7372292791004852, 0.05872519510716418, 0.054797820759740906, 0.14924770503260967]
 
-given_astar_path = [6, 4, 6, 3, 6, 2, 7, 2, 7, 1]
+given_astar_path = [6, 2, 7, 2, 7, 1]
 
 
 result = get_best_possible_action(cart_start_state_list, cart_goal_position, pedestrians_list, possible_goal_positions, initial_human_goal_distribution_list, given_astar_path)

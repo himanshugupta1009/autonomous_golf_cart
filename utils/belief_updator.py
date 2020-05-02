@@ -2,7 +2,10 @@ def calc_distance(human, human_goals):
     distances = []
     for goal in human_goals:
         dist = ((human[0] - goal[0])**2 + (human[1]-goal[1])**2)**0.5
-        distances.append(1/dist)
+        if dist != 0:
+            distances.append(1/dist)
+        else:
+            distances.append(0)
     return distances
 
 
