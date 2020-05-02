@@ -4,6 +4,7 @@ using POMDPModels
 using ARDESPOT
 using POMDPPolicies
 using POMDPModelTools
+using BasicPOMCP
 
 
 using ParticleFilters
@@ -416,7 +417,7 @@ function get_best_possible_action(cart_start_state_list, cart_goal_position, ped
         human_state_start_list,all_goals_list,human_dis_list,robot_path,1)
 
     m = golfcart_pomdp()
-    #solver = DESPOTSolver(bounds=(-20.0, 1000.0))
+    #solver = POMCPSolver(tree_queries=1000, c=10)
     #solver = DESPOTSolver(bounds=(DefaultPolicyLB(RandomSolver()), golf_cart_upper_bound))
     solver = DESPOTSolver(bounds=IndependentBounds(DefaultPolicyLB(FunctionPolicy(b->1)),golf_cart_upper_bound, check_terminal=true, consistency_fix_thresh=10.0),D=100)
     planner = solve(solver, m)
@@ -426,18 +427,17 @@ function get_best_possible_action(cart_start_state_list, cart_goal_position, ped
     return a
 end
 
-
-cart_start_state_list = [6, 2, 0, 2]
+cart_start_state_list = [4, 7, 0, 4]
 
 cart_goal_position = [7,1]
 
-pedestrians_list = [9, 17, 14, 30, 14, 30, 1, 30, 2, 30, 1, 30, 3, 2, 1, 1]
+pedestrians_list = [11, 2, 14, 1, 8, 25, 14, 30, 8, 17, 14, 30, 11, 11, 14, 1]
 
 possible_goal_positions = [1,1,1,30,14,30,14,1]
 
-initial_human_goal_distribution_list = [0.2210735669168094, 0.25907997536166755, 0.28392977784176104, 0.23591667987976203, 0.22023846872452524, 0.5384067715949707, 0.0, 0.24135475968050413, 0.02997610427531354, 0.869823699824053, 0.07248530831867109, 0.027714887581962454, 0.7372292791004852, 0.05872519510716418, 0.054797820759740906, 0.14924770503260967]
+initial_human_goal_distribution_list = [0.20521470430751101, 0.06936542165149051, 0.07323734121250129, 0.6521825328284971, 0.1231879351736534, 0.3580076646415972, 0.3943149716252608, 0.12448942855948873, 0.22600902037117318, 0.267329844477873, 0.27567587519020825, 0.23098525996074556, 0.26677690123061865, 0.17571658682413618, 0.19613827862162636, 0.3613682333236189]
 
-given_astar_path = [6, 2, 7, 2, 7, 1]
+given_astar_path = [4, 7, 4, 6, 4, 5, 5, 5, 5, 4, 6, 4, 6, 3, 6, 2, 7, 2, 7, 1]
 
 
 result = get_best_possible_action(cart_start_state_list, cart_goal_position, pedestrians_list, possible_goal_positions, initial_human_goal_distribution_list, given_astar_path)
