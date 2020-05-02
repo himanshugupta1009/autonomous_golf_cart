@@ -71,8 +71,8 @@ distribution over human's goals.
 
 <img src="media/traj2.gif"  width="640" height="480" />
 
-#### Experiment #3:
+[//]:<>(#### Experiment #3:)
 
-<img src="media/traj3.gif"  width="640" height="480" />
+[//]:<>(<img src="media/traj3.gif"  width="640" height="480" />)
 
 
