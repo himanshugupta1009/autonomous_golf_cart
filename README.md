@@ -46,8 +46,19 @@ motion trajectories.
 
 ## Simulations:
 
+<img src="media/legend.png' />
+
+
 #### Experiment #1:
 
 <img src="media/traj_1.gif"  width="640" height="480" />
+
+#### Experiment #1:
+
+<img src="media/traj_2.gif"  width="640" height="480" />
+
+#### Experiment #1:
+
+<img src="media/traj_3.gif"  width="640" height="480" />
 
 

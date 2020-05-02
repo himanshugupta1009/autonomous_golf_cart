@@ -57,9 +57,9 @@ Goal Location = [7,1]
 
 ---
 
-#### Trajectory - 2
+#### Trajectory - 3
 
-Path length = 36
+Path length = 39
 
 Total Reward = -21.488
 
