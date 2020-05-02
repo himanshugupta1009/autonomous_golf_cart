@@ -8,7 +8,7 @@ This project is a part of our course **ASEN 6519 - Decision Making Under Uncerta
 took with **Professor Zachary Sunberg** in Spring 2020 at CU Boulder.
 
 
-##Problem Statement:
+## Problem Statement:
 
 There are many successful autonomous vehicles today, but it is still uncommon to see autonomous 
 vehicles driving among many pedestrians. To drive near pedestrians safely, efficiently, 
@@ -44,6 +44,10 @@ We run everything in simulations on a discrete grid world with hand designed com
 motion trajectories.
 
 
-## Simulations
+## Simulations:
+
+#### Experiment #1:
+
+<img src="https://media.giphy.com/media/vFKqnCdLPNOKc/giphy.gif" width="40" height="40" />
 
 
