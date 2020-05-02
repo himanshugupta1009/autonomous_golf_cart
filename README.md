@@ -48,6 +48,6 @@ motion trajectories.
 
 #### Experiment #1:
 
-<img src="traj_1.gif"/>
+<img src="media/traj_1.gif"  width="640" height="480" />
 
 
