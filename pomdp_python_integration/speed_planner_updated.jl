@@ -111,8 +111,8 @@ function POMDPs.gen(m::Speed_Planner_POMDP, s, a, rng)
             elseif temp_human_y > goal.y
                 temp_human_y = temp_human_y - 1
             end
-            temp_human_x = clamp(temp_human_x,1,14)
-            temp_human_y = clamp(temp_human_y,1,30)
+            temp_human_x = clamp(temp_human_x,1,46)
+            temp_human_y = clamp(temp_human_y,1,94)
             return pedestrian_state(temp_human_x, temp_human_y, goal), goal_location(temp_human_x, temp_human_y)
         end
         if rand_num <= 0.7
@@ -349,7 +349,7 @@ function golf_cart_upper_bound(m, b)
         return time_needed_at_curr_vel
     end
     for (s, w) in weighted_particles(b)
-        if(s.cart.x == 7 && s.cart.y==1)
+        if(s.cart.x == 24 && s.cart.y==1)
             value_sum += w*m.goal_reward
         elseif (is_collision_state(s))
             value_sum += w*m.collision_reward*(-1)
@@ -427,17 +427,17 @@ function get_best_possible_action(cart_start_state_list, cart_goal_position, ped
     return a
 end
 
-cart_start_state_list = [4, 7, 0, 4]
+cart_start_state_list = [23, 89, 0, 2]
 
-cart_goal_position = [7,1]
+cart_goal_position = [24,1]
 
-pedestrians_list = [11, 2, 14, 1, 8, 25, 14, 30, 8, 17, 14, 30, 11, 11, 14, 1]
+pedestrians_list = [4, 7, 1, 1, 6, 80, 1, 94, 42, 90, 46, 94, 40, 4, 46, 1]
 
 possible_goal_positions = [1,1,1,30,14,30,14,1]
 
-initial_human_goal_distribution_list = [0.20521470430751101, 0.06936542165149051, 0.07323734121250129, 0.6521825328284971, 0.1231879351736534, 0.3580076646415972, 0.3943149716252608, 0.12448942855948873, 0.22600902037117318, 0.267329844477873, 0.27567587519020825, 0.23098525996074556, 0.26677690123061865, 0.17571658682413618, 0.19613827862162636, 0.3613682333236189]
+initial_human_goal_distribution_list = [0.7665116447024771, 0.05906738077720589, 0.05322484200523873, 0.12119613251507826, 0.11005288668716705, 0.5860038873823079, 0.20556229971885634, 0.09838092621166862, 0.0458696401815084, 0.10911017768903254, 0.7945682277863013, 0.05045195434315777, 0.13049064092822335, 0.05203732607313581, 0.05658738301863917, 0.7608846499800017]
 
-given_astar_path = [4, 7, 4, 6, 4, 5, 5, 5, 5, 4, 6, 4, 6, 3, 6, 2, 7, 2, 7, 1]
+given_astar_path = [23, 89, 23, 88, 24, 88, 24, 87, 24, 86, 24, 85, 24, 84, 24, 83, 24, 82, 24, 81, 24, 80, 24, 79, 24, 78, 24, 77, 24, 76, 24, 75, 24, 74, 25, 74, 26, 74, 27, 74, 28, 74, 28, 73, 29, 73, 29, 72, 29, 71, 29, 70, 29, 69, 29, 68, 29, 67, 29, 66, 28, 66, 28, 65, 27, 65, 27, 64, 27, 63, 27, 62, 27, 61, 27, 60, 27, 59, 27, 58, 27, 57, 27, 56, 27, 55, 27, 54, 27, 53, 26, 53, 25, 53, 24, 53, 24, 52, 24, 51, 24, 50, 24, 49, 24, 48, 24, 47, 24, 46, 24, 45, 24, 44, 24, 43, 24, 42, 24, 41, 24, 40, 24, 39, 24, 38, 24, 37, 24, 36, 24, 35, 24, 34, 24, 33, 24, 32, 24, 31, 24, 30, 24, 29, 24, 28, 24, 27, 24, 26, 24, 25, 24, 24, 24, 23, 24, 22, 24, 21, 24, 20, 24, 19, 24, 18, 24, 17, 24, 16, 24, 15, 24, 14, 24, 13, 24, 12, 24, 11, 24, 10, 24, 9, 24, 8, 23, 8, 22, 8, 21, 8, 20, 8, 20, 7, 19, 7, 19, 6, 19, 5, 19, 4, 19, 3, 19, 2, 20, 2, 21, 2, 22, 2, 23, 2, 24, 2, 24, 1]
 
 
 result = get_best_possible_action(cart_start_state_list, cart_goal_position, pedestrians_list, possible_goal_positions, initial_human_goal_distribution_list, given_astar_path)

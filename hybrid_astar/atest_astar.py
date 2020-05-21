@@ -25,7 +25,7 @@ def _read_grid_map(grid_map_path):
 
 def convert_grid_for_astar():
     this_file_path = os.path.dirname(os.path.realpath(__file__))
-    grid_map_path = os.path.join(this_file_path, 'environment.txt')
+    grid_map_path = os.path.join(this_file_path, 'large_env.txt')
     start_grid_map = _read_grid_map(grid_map_path)
 
     ## convert 0's to inf
@@ -42,8 +42,9 @@ def main():
     grid = convert_grid_for_astar()
     grid = np.asarray(grid, dtype=np.float32)
 
-    start = np.asarray([8, 30], dtype=np.int)
-    end = np.asarray([7, 1], dtype=np.int)
+    # start = np.asarray([8, 30], dtype=np.int)
+    start = np.asarray([22, 94], dtype=np.int)
+    end = np.asarray([24, 1], dtype=np.int)
 
     # # start is the first white block in the top row
     # start_j, = np.where(grid[0, :] == 1)

@@ -24,10 +24,10 @@ env._render()
 # #traj-3
 cart_poses = [[8,30], [7, 29], [7, 26],[6, 24],[5, 21],[4, 19],[4, 16],[4, 14],[4, 13],[5, 12],[4, 11],[4, 10],[4, 9],[4, 8],[4, 7],[4, 6],[5, 5],[6, 4],[6, 2],[7, 1]]
 
-# env.move_humans_to_goals(cart_poses)
+env.move_humans_to_goals(cart_poses)
+#
 
-
-env.move_cart_to_goal(cart_poses)
+# env.move_cart_to_goal(cart_poses)
 
 # env.step(2)
 

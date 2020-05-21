@@ -27,7 +27,7 @@ human_curr_poses = [humans_list[i].get_state() for i in range(len(humans_list))]
 # print(human_curr_poses)
 # human_goals = [humans_list[i].get_goal() for i in range(len(humans_list))]
 # print(human_goals)
-human_goals = [[1,1], [1,30], [14,30], [14,1]]
+human_goals = [[1,1], [1,94], [46,94], [46,1]]
 
 
 # and update belief
@@ -40,7 +40,7 @@ new_human_goal_pair_list = goal_update_based_on_new_belief(new_belief, human_cur
 
 # loop until Cart reaches it's goal at [7,1]
 robot_curr_state = env._get_robot_state()
-goal_state = [7,1]
+goal_state = [24,1]
 print(robot_curr_state)
 robot_prev_state = robot_curr_state
 
@@ -105,7 +105,7 @@ while robot_curr_state != goal_state:
 
     # and update belief
     new_belief = belief_update(human_goals, human_curr_poses, initial_belief)
-    # print(new_belief)
+    print(new_belief)
 
     # update new goald for pomdp based on new belief
     new_human_goal_pair_list = goal_update_based_on_new_belief(new_belief, human_curr_poses, human_goals)
@@ -114,7 +114,7 @@ while robot_curr_state != goal_state:
 
     # print(type(goal_state))
     # print(type(robot_curr_state))
-    # print(robot_curr_state)
+    print(robot_curr_state)
     robot_curr_state = list(robot_curr_state)
 
     # robot_pose, pedestrian_poses, coll_threshold, robot_prev_pose, robot_goal, robot_speed

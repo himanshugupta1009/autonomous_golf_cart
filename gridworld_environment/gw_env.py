@@ -31,12 +31,13 @@ class GridworldEnv(gym.Env):
         self.action_pos_dict = {0: [0, 0], 1: [-1, 0], 2: [1, 0], 3: [0, -1], 4: [0, 1]}
 
         ''' set observation space '''
-        self.obs_shape = [128, 256, 3]  # observation space shape
+        # self.obs_shape = [128, 256, 3]  # observation space shape
+        self.obs_shape = [96, 192, 3]
         self.observation_space = spaces.Box(low=0, high=1, shape=self.obs_shape, dtype=np.float32)
 
         ''' initialize system state '''
         this_file_path = os.path.dirname(os.path.realpath(__file__))
-        self.grid_map_path = os.path.join(this_file_path, 'environment.txt')
+        self.grid_map_path = os.path.join(this_file_path, 'large_env.txt')
         self.start_grid_map = self._read_grid_map(self.grid_map_path)  # initial grid map
         self.current_grid_map = copy.deepcopy(self.start_grid_map)  # current grid map
         self.observation = self._gridmap_to_observation(self.start_grid_map)
@@ -292,7 +293,7 @@ class GridworldEnv(gym.Env):
         human_paths = [
                         [4, 4, 4, 4, 4, 2, 2, 2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 2, 2, 4, 4, 4, 4, 4, 2, 4, 4, 4, 2, 4, 4, 4, 4, 4],
                         [3, 3, 3, 3, 3, 2, 2, 2, 2, 3, 3, 2, 2, 2, 2, 3, 3, 3, 2, 3, 3, 3, 2, 3, 3, 3, 2, 3, 3, 3, 3, 3],
-                        [4, 4, 4, 1, 1, 1, 1, 1, 4, 4, 1, 1, 1, 4, 4, 1, 1, 4],
+                        [4, 4, 4, 1, 1, 1, 1, 1, 4, 4, 1, 1, 1, 4, 4, 1, 1, 1],
                         [3, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1]]
 
         # # Human Trajectory 2
@@ -321,11 +322,12 @@ class GridworldEnv(gym.Env):
         for i in range(len(humans_x)):
             humans_pos.append([humans_x[i], humans_y[i]])
         # print(humans_pos)
-        humans_pos = [[4, 3], [3, 22], [11, 22], [12, 4]] # for check
+        # humans_pos = [[4, 3], [3, 22], [11, 22], [12, 4]] # for check
+        humans_pos = [[4, 3], [6, 84], [43, 87], [43, 5]]  # for check
         return humans_pos
 
     def get_human_goal(self):
-        human_goals = [[14,30], [14,1], [1,30], [1,1]]
+        human_goals = [[46,94], [46,1], [1,94], [1,1]]
         return human_goals
 
     def step_human(self, human_state, action):
@@ -337,7 +339,7 @@ class GridworldEnv(gym.Env):
             self.current_grid_map[human_state[0]-1, human_state[1]] = 7
             human_next_state[0] -= 1
         # move down
-        if action == 2 and human_state[0] < 14:
+        if action == 2 and human_state[0] < 46:
             self.current_grid_map[human_state[0], human_state[1]] = 0
             self.current_grid_map[human_state[0] + 1, human_state[1]] = 7
             human_next_state[0] += 1
@@ -347,7 +349,7 @@ class GridworldEnv(gym.Env):
             self.current_grid_map[human_state[0], human_state[1]-1] = 7
             human_next_state[1] -= 1
         # move right
-        if action == 4 and human_state[0] < 30:
+        if action == 4 and human_state[0] < 94:
             self.current_grid_map[human_state[0], human_state[1]] = 0
             self.current_grid_map[human_state[0], human_state[1]+1] = 7
             human_next_state[1] += 1
@@ -381,13 +383,13 @@ class GridworldEnv(gym.Env):
         while (keep_while):
             humans = self.move_humans_one_time_step(i)
             # next_pos = self.plan_astar_path_at_current_time()
-            next_pos = cart_poses[i]
+            # next_pos = cart_poses[i]
             # next_pos = [8,30]
 
-            self.robot_state = next_pos
+            # self.robot_state = next_pos
 
-            self.current_grid_map[next_pos[0], next_pos[1]] = 3
-            self.observation = self._gridmap_to_observation(self.current_grid_map)
+            # self.current_grid_map[next_pos[0], next_pos[1]] = 3
+            # self.observation = self._gridmap_to_observation(self.current_grid_map)
             self._render()
 
             for_break = True
@@ -407,8 +409,8 @@ class GridworldEnv(gym.Env):
         grid[grid == 0] = 1
         grid = np.asarray(grid, dtype=np.float32)
 
-        start = np.asarray([8, 30], dtype=np.int)
-        end = np.asarray([7, 1], dtype=np.int)
+        start = np.asarray([22, 94], dtype=np.int)
+        end = np.asarray([24, 1], dtype=np.int)
     #
     #     # robot_path = pyastar.astar_path(grid, start, end, allow_diagonal=False)
     #     robot_path = [[ 8, 30],
@@ -518,7 +520,7 @@ class GridworldEnv(gym.Env):
 
         # start = np.asarray([8, 30], dtype=np.int)
         start = self.robot_state
-        end = np.asarray([7, 1], dtype=np.int)
+        end = np.asarray([24, 1], dtype=np.int)
 
         robot_path = pyastar.astar_path(grid, start, end, allow_diagonal=False)
 
